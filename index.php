@@ -8,5 +8,13 @@
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
-include('ORM.class.php');
+//	...
+include('autoloader.php');
+
+//	...
+if(!Unit::Load('sql') ){
+	throw new Exception("SQL unit was not found.");
+}
+
+//	...
 return true;
