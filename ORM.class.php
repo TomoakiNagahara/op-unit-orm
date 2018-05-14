@@ -66,7 +66,9 @@ class ORM
 	function Create($qql)
 	{
 		//	$select is select configuration array.
-		$select = \OP\UNIT\DB\QQL::_Select($qql, [], $this->_DB);
+		$namespace = get_class($this->_DB);
+		$classname = "\\$namespace\QQL";
+		$select = $classname::Parse($qql, [], $this->_DB);
 
 		//	...
 		$database = $select['database'] ?? $this->_DB->Database();
@@ -101,12 +103,16 @@ class ORM
 		$option['limit'] = 1;
 
 		//	$select is select configuration array.
-		$select   = \OP\UNIT\DB\QQL::_Select($qql, $option, $this->_DB);
-		$database = $select['database'] ?? $this->_DB->Database();
-		$table    = $select['table'];
+		$namespace = get_class($this->_DB);
+		$classname = "\\$namespace\QQL";
 
 		//	Result single column record.
-		$result = \OP\UNIT\DB\QQL::_Execute($select, $this->_DB);
+		$result = $classname::Execute($qql, [], $this->_DB);
+
+		//	...
+		$config    = $classname::Config();
+		$database  = $config['database'] ?? $this->_DB->Database();
+		$table     = $config['table'];
 
 		//	...
 		$query  = \OP\UNIT\SQL\Show::Column($this->_DB, $database, $table);
