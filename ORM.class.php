@@ -30,32 +30,183 @@ class ORM
 	 */
 	use \OP_CORE;
 
+	/** DSN
+	 *
+	 * @var string
+	 */
+	private $_dsn;
+
+	/** Configuration.
+	 *
+	 * @var array
+	 */
+	private $_config;
+
 	/** IF_DATABASE
 	 *
-	 * @var \IF_DATABASE
+	 * @var \OP\UNIT\Database
 	 */
 	private $_DB;
 
-	/** IF_FORM
+	/** Insert
 	 *
-	 * @var \IF_FORM
+	 * @param	 array	 $config
+	 * @return	 integer $ai
 	 */
-	private $_form;
+	private function _Insert($config)
+	{
+		//	...
+		$query = \OP\UNIT\SQL\Insert::Get($config, $this->DB());
+
+		//	...
+		return $this->DB()->Query($query, 'insert');
+	}
+
+	/** Update
+	 *
+	 * @param	 array	 $config
+	 * @return	 integer $count
+	 */
+	private function _Update($config)
+	{
+		//	...
+		$query = \OP\UNIT\SQL\Update::Get($config, $this->DB());
+
+		//	...
+		return $this->DB()->Query($query, 'update');
+	}
+
+	/** Delete
+	 *
+	 */
+	private function _Delete()
+	{
+
+	}
+
+	/** Generate "Record" object.
+	 *
+	 * @param	 string				 $qql
+	 * @return	\OP\UNIT\ORM\Record	 $record
+	 */
+	private function _Record($qql, $create)
+	{
+		//	Force single column record.
+		$option['limit'] = 1;
+
+		//	$select is select configuration array.
+		$namespace = get_class($this->DB());
+		$namespace = strtoupper($namespace);
+		$classpath = "\\$namespace\QQL";
+
+		//	Generate config from QQL.
+		$select = $classpath::Parse($qql, $option, $this->DB());
+
+		//	Fetch table struct.
+		$database = $select['database'] ?? $this->DB()->Config()['database'];
+		$table    = $select['table'];
+		$table    = trim($table, '`');
+		$query    = \OP\UNIT\SQL\Show::Column($this->DB(), $database, $table);
+		$struct   = $this->DB()->Query( $query );
+
+		//	Create or Fetch.
+		if( $create ){
+			$result = [];
+		}else{
+			//	Fetch record.
+			$result = $classpath::Select($select, $this->DB());
+		}
+
+		/* @var $record ORM\Record */
+		$record = new ORM\Record( $database, $table, $struct, $result, $this->_config[$this->_dsn][$database][$table] ?? [] );
+
+		//	Return "Record" Object.
+		return $record;
+	}
 
 	/** Connect to database.
 	 *
+	 * <pre>
+	 * //	1. Connect at URL scheme.
+	 * $orm->Connect('mysql://testcase:password@localhost:3306?charset=utf8');
+	 *
+	 * //	2. Connect at config array.
+	 * $config = [
+	 *   'driver'   => 'mysql',
+	 *   'host'     => 'localhost',
+	 *   'port'     => '3306',
+	 *   'user'     => 'testcase',
+	 *   'password' => 'password',
+	 *   'charset'  => 'utf8',
+	 * ];
+	 * $orm->Connect($config);
+	 * </pre>
+	 *
+	 * @param	 string|array	 $config
+	 * @reutrn	 boolean		 $io
 	 */
 	function Connect($config)
 	{
 		//	...
-		if(!$this->_DB = \Unit::Factory('DB') ){
-			return false;
+		if( $this->_DB ){
+			\Notice::Set('Already connected. (Instance had database object)');
+			return;
+		}
+
+		//	Build DSN and save.
+		if( is_array($config) ){
+			//	...
+		}
+
+		//	Parse of DSN.
+		if( is_string($config) ){
+			//	...
+			$this->_dsn = $config;
+
+			//	...
+			$config = parse_url($config);
+
+			//	...
+			if( isset($config['query']) ){
+				parse_str($config['query'], $query);
+				$config = array_merge($config, $query);
+			}
 		}
 
 		//	...
-		if(!$this->_DB->Connect($config) ){
-			return false;
+		return $this->DB()->Connect($config);
+	}
+
+	/** Configuration.
+	 *
+	 * @param null|string $config
+	 */
+	function Config($config=null)
+	{
+		//	...
+		if(!$this->_config = include($config) ){
+			return;
 		}
+
+		//	...
+		return $this->_config;
+	}
+
+	/** Get/Set Unit of Database.
+	 *
+	 * @param	\OP\UNIT\Database|null	 $DB
+	 * @return	\OP\UNIT\Database		 $DB
+	 */
+	function DB($DB=null)
+	{
+		if( $DB ){
+			$this->_DB = $DB;
+		}else
+			if(!$this->_DB ){
+				$this->_DB = \Unit::Instance('Database');
+		}
+
+		return $this->_DB;
 	}
 
 	/** New empty recrod.
@@ -63,68 +214,19 @@ class ORM
 	 * @param	 string		 $table_name
 	 * @return	 ORM\Record	 $record
 	 */
-	function Create($qql)
+	function Create($table)
 	{
-		//	$select is select configuration array.
-		$namespace = get_class($this->_DB);
-		$classname = "\\$namespace\QQL";
-		$select = $classname::Parse($qql, [], $this->_DB);
-
-		//	...
-		$database = $select['database'] ?? $this->_DB->Database();
-		$table    = $select['table'];
-
-		//	...
-		$query  = \OP\UNIT\SQL\Show::Column($this->_DB, $database, $table);
-		$struct = $this->_DB->Query( $query );
-
-		/* @var $record ORM\Record */
-		$record = new ORM\Record($struct);
-		$record->Database( $database );
-		$record->Table(    $table    );
-
-		//	...
-		foreach( $struct as $column ){
-			$record->Set( $column['field'], '' );
-		}
-
-		//	...
-		return $record;
+		return self::_Record($table, true);
 	}
 
 	/** Find single record.
 	 *
-	 * @param	 string		 $qql
-	 * @return	 ORM\Record	 $record
+	 * @param	 string				 $qql
+	 * @return	\OP\UNIT\ORM\Record	 $record
 	 */
-	function Find($qql, $option=null)
+	function Find($qql)
 	{
-		//	Force single column record.
-		$option['limit'] = 1;
-
-		//	$select is select configuration array.
-		$namespace = get_class($this->_DB);
-		$classname = "\\$namespace\QQL";
-
-		//	Result single column record.
-		$result = $classname::Execute($qql, [], $this->_DB);
-
-		//	...
-		$config    = $classname::Config();
-		$database  = $config['database'] ?? $this->_DB->Database();
-		$table     = $config['table'];
-
-		//	...
-		$query  = \OP\UNIT\SQL\Show::Column($this->_DB, $database, $table);
-		$struct = $this->_DB->Query( $query );
-
-		/* @var $record ORM\Record */
-		$record = new ORM\Record( $struct, $result );
-		$record->Database( $database );
-		$record->Table(    $table    );
-
-		//	Return "Record" Object.
-		return $record;
+		return self::_Record($qql, false);
 	}
 
 	/** Find multiple records.
@@ -149,27 +251,22 @@ class ORM
 	 * @param  ORM\Record $record
 	 * @return mixed
 	 */
-	function Save($record, $validate=[])
+	function Save(&$record)
 	{
 		//	...
 		if( $form = $record->Form() ){
 			//	...
 			if(!$form->Token() ){
-				return null;
+				return;
 			}
 
 			//	...
-			if(!$record->Validate() ){
-				return null;
+			if(!$form->Validate() ){
+				return;
 			}
 
 			//	...
 			$record->Sets( $form->Values() );
-		}
-
-		//	...
-		if(!$record->Changed()){
-			return null;
 		}
 
 		//	...
@@ -178,71 +275,69 @@ class ORM
 		$config['table']    = $record->Table();
 		$config['set']      = $record->Changed();
 
-		//	...
+		//	Get primary key and value.
 		$pkey = $record->Pkey();
 		$pval = $record->Get($pkey);
 
 		//	...
-		if( $pval ){
+		unset($config['set'][$pkey]);
+
+		//	...
+		if( empty($config['set']) ){
+			return 0;
+		}
+
+		//	...
+		if( strlen($pval) ){
 			//	Update
 			$config['where'][$pkey] = $pval;
 			$config['limit'] = 1;
 
 			//	...
-			$pval  = $this->_Update($config) ? true: false;
+			$result = $this->_Update($config);
 		}else{
 			//	Insert
-			unset($config['set'][$pkey]);
+			//	Get new insert id.
+			$result = $this->_Insert($config);
 
-			//	...
-			$pval = $this->_Insert($config);
+			//	Set new insert id.
+			$record->Set($pkey, $result);
 
-			//	...
-			$record->Set($pkey, $pval);
-
-			//	...
-			if( $form = $record->Form() ){
-				$vals = $form->Values();
-				$conf = $form->Config();
-
-				//	...
-				$form->Clear();
-
-				//	...
-				$conf['name'] = ORM\Config::FormName($config['database'], $config['table'], $pval);
-				$form->Config($conf);
-			}
+			//	Clear form value.
+			$record->Form()->Clear();
 		}
 
 		//	...
-		return $pval;
-	}
-
-	function _Insert($config)
-	{
-		//	...
-		$query = \OP\UNIT\SQL\Insert::Get($config, $this->_DB);
+		if( $result ){
+			$record->Changed(true);
+		}
 
 		//	...
-		return $this->_DB->Query($query, 'insert');
+		return $result;
 	}
 
-	function _Select()
+	/** Delete record.
+	 *
+	 */
+	function Delete()
 	{
 
 	}
 
-	function _Update($config)
+	/** Generate self-test configuration.
+	 *
+	 * @param	 string	 $file
+	 */
+	function Selftest($file)
 	{
-		//	...
-		$query = \OP\UNIT\SQL\Update::Get($config, $this->_DB);
-
-		//	...
-		return $this->_DB->Query($query, 'update');
+		ORM\Selftest::Auto($file);
 	}
 
-	function _Delete()
+	/** For developers.
+	 *
+	 */
+	function Debug()
 	{
-
+		D( $this->DB()->Queries() );
 	}
 }
