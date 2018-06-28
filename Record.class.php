@@ -30,6 +30,18 @@ class Record
 	 */
 	use \OP_CORE;
 
+	/** IF_FORM
+	 *
+	 * @var \OP\UNIT\Form
+	 */
+	private $_form;
+
+	/** Configuration.
+	 *
+	 * @var array
+	 */
+	private $_config;
+
 	/** Database of record.
 	 *
 	 * @var string
@@ -52,19 +64,13 @@ class Record
 	 *
 	 * @var array
 	 */
-	private $_columns;
+	private $_column;
 
 	/** Changed values.
 	 *
 	 * @var array
 	 */
 	private $_change;
-
-	/** Validation errors.
-	 *
-	 * @var array
-	 */
-	private $_validate;
 
 	/** Validation result.
 	 *
@@ -77,22 +83,14 @@ class Record
 	 * @param string $struct
 	 * @param string $record
 	 */
-	function __construct($struct, $record=null)
+	function __construct($database, $table, $struct, $record=[], $config)
 	{
 		//	...
-		$this->_columns = $struct;
-
-		//	...
-		if( $record ){
-			//	...
-			$this->_record = $record;
-
-			//	...
-			foreach( $record as $field => $value ){
-				//	...
-				$this->$field = $value;
-			}
-		}
+		$this->_database = $database;
+		$this->_table  = $table;
+		$this->_column = $struct;
+		$this->_record = $record;
+		$this->_config = $config;
 	}
 
 	/** Get record value.
@@ -113,8 +111,11 @@ class Record
 		}else{
 			$value = null;
 
-			//	This field name has not been exists.
-			\Notice::Set("This field name has not been exists. ($name)");
+			//	Call from ORM->Save(), Nessarry pkey value.
+			if( $name !== $this->Pkey() ){
+				//	This field name has not been exists.
+				\Notice::Set("This field name has not been exists. ($name)");
+			}
 		}
 
 		//	...
@@ -128,21 +129,33 @@ class Record
 	 */
 	function __set($name, $value)
 	{
-		//	...
-		$type = gettype($value);
-
-		//	...
-		if(!isset($this->_change[$name]) ){
-			//	...
-		}else
-
-		//	...
-		if( $this->_change[$name] === $value ){
+		//	Does not update timestamp.
+		if( $this->_column[$name]['type'] === 'timestamp' ){
 			return;
 		}
 
+		//	Empty string is convert to null.
+		if( is_string($value) and strlen($value) === 0 ){
+			$value = null;
+		}
+
+		//	Empty array is convert to null.
+		if( is_array($value) ){
+			if( strlen(trim(join(',',$value), ',')) === 0 ){
+				$value = null;
+			}
+		}
+
+		//	Already changed.
+		if( isset($this->_change[$name]) ){
+			//	Return if the values are the same.
+			if( $this->_change[$name] === $value ){
+				return;
+			}
+		}
+
 		//	$this->_record is origin.
-		if( $this->_record[$name] === $value ){
+		if(($this->_record[$name] ?? null) === $value ){
 
 			//	Recovered to original value.
 			unset($this->_change[$name]);
@@ -151,154 +164,32 @@ class Record
 			return;
 		}
 
+		//	If null is okey.
+		if( $this->_column[$name]['null'] ){
+			//	If value is empty.
+			if( (is_string($value) and strlen($value) === 0)
+					or
+				(is_array($value)  and count($value)   <= 1)
+			){
+				//	Database into null.
+				$value = null;
+			}
+		}
+
 		//	$this->_change is update values.
 		$this->_change[$name] = $value;
+
+		//	Change of instanciated Form input value.
+		$this->Form()->Set($name, $value);
 	}
 
-	/** Get/Set database name
+	/** Is ready.
 	 *
-	 * @param  string $database
-	 * @return string $database
+	 * @return boolean
 	 */
-	function Database($database=null)
+	function isReady()
 	{
-		if( $database ){
-			if(!$this->_database ){
-				$this->_database = $database;
-			}else{
-				\Notice::Set("Database name was already setted. ({$this->_database}, $database)");
-			}
-		}
-
-		//	...
-		return $this->_database;
-	}
-
-	/** Get/Set table name.
-	 *
-	 * @param  string $table
-	 * @return string $table
-	 */
-	function Table($table=null)
-	{
-		if( $table ){
-			if(!$this->_table ){
-				$this->_table = $table;
-			}else{
-				\Notice::Set("Table name was already setted. ({$this->_table}, $table)");
-			}
-		}
-
-		//	...
-		return $this->_table;
-	}
-
-	/** Get column structure.
-	 *
-	 * @return array $columns
-	 */
-	function Column()
-	{
-		return $this->_columns;
-	}
-
-	/** Get Primary key field name.
-	 *
-	 * @return string $pkey
-	 */
-	function Pkey()
-	{
-		//	...
-		static $_pkey;
-
-		//	...
-		if(!$_pkey ){
-			foreach( $this->_columns as $name => $column ){
-				if( $column['key'] === 'pri' ){
-					$_pkey = $name;
-					break;
-				}
-			}
-		}
-
-		//	...
-		return $_pkey;
-	}
-
-	/** To array of record value.
-	 *
-	 * @return array
-	 */
-	function Array()
-	{
-		//	...
-		$result = $this->_record;
-
-		//	...
-		foreach( $this->Changed() as $key => $value ){
-			$result[$key] = $value;
-		}
-
-		//	...
-		return $result;
-	}
-
-	/** Generate Form object.
-	 *
-	 * @param unknown $record
-	 * @return \OP\UNIT\Form
-	 */
-	function Form()
-	{
-		//	...
-		static $_form;
-
-		//	...
-		if(!$_form ){
-			$_form = \Unit::Factory('Form');
-
-			//	...
-			$config = Config::Form(
-					$this->Database(),
-					$this->Table(),
-					$this->Column(),
-					$this->Array()
-					);
-
-			//	...
-			$_form->Config($config);
-		}
-
-		//	...
-		return $_form;
-	}
-
-	/** Validation
-	 *
-	 */
-	function Validate()
-	{
-		//	...
-		if( $this->_isValid !== null ){
-			return $this->_validate;
-		}
-
-		//	...
-		if(!\Unit::Load('validate')){
-			return false;
-		}
-
-		//	...
-		$rules  = Config::Validate($this->_columns);
-
-		//	...
-		$values = $this->Form()->Values();
-
-		//	...
-		$this->_isValid = \OP\UNIT\Validate::Evaluations($rules, $values, $this->_validate);
-
-		//	...
-		return $this->_isValid;
+		return $this->_column ? true: false;
 	}
 
 	/** Is found record.
@@ -316,7 +207,121 @@ class Record
 	 */
 	function isValid()
 	{
+		return $this->Validate();
+	}
+
+	/** Get/Set database name
+	 *
+	 * @param  string $database
+	 * @return string $database
+	 */
+	function Database($database=null)
+	{
+		return $this->_database;
+	}
+
+	/** Get/Set table name.
+	 *
+	 * @param  string $table
+	 * @return string $table
+	 */
+	function Table($table=null)
+	{
+		return $this->_table;
+	}
+
+	/** Get column structure.
+	 *
+	 * @return array $columns
+	 */
+	function Column()
+	{
+		return $this->_column;
+	}
+
+	/** Get Primary key field name.
+	 *
+	 * @return string $pkey
+	 */
+	function Pkey()
+	{
+		//	...
+		static $_pkey;
+
+		//	...
+		if(!$_pkey ){
+			foreach( $this->_column as $name => $column ){
+				if( $column['key'] === 'pri' ){
+					$_pkey = $name;
+					break;
+				}
+			}
+		}
+
+		//	...
+		return $_pkey;
+	}
+
+	/** To array of record value.
+	 *
+	 * @return array
+	 */
+	function Values()
+	{
+		return array_merge($this->_record ?? [], $this->_change ?? []);
+	}
+
+	/** Generate Form object.
+	 *
+	 * @param unknown $record
+	 * @return \OP\UNIT\Form
+	 */
+	function &Form()
+	{
+		//	...
+		if(!$this->_form ){
+			$this->_form = \Unit::Instance('Form');
+
+			//	...
+			$config = Config::Form(
+				$this->Database(),
+				$this->Table(),
+				$this->Column(),
+				$this->Values(),
+				$this->_config
+			);
+
+			//	...
+			$this->_form->Config($config);
+		}
+
+		//	...
+		return $this->_form;
+	}
+
+	/** Validation
+	 *
+	 * @return boolean
+	 */
+	function Validate()
+	{
+		//	...
+		if( $this->_isValid === null ){
+			//	...
+			$this->_isValid = $this->Form()->Validate();
+		}
+
+		//	...
 		return $this->_isValid;
+	}
+
+	/** Has field.
+	 *
+	 * @return	 boolean	$io
+	 */
+	function Has($field)
+	{
+		return isset($this->_column[$field]);
 	}
 
 	/** Get value.
@@ -352,24 +357,32 @@ class Record
 
 	/** Get changed values.
 	 *
+	 * @param  boolean $clear
 	 * @return array
 	 */
-	function Changed()
+	function Changed($clear=false)
 	{
 		//	...
-		$result = [];
-
-		//	...
-		if( empty($this->_change) ){
-			return $result;
+		if( $clear ){
+			$this->_change = null;
 		}
 
 		//	...
-		foreach( $this->_change as $name => $value ){
-			$result[$name] = $value;
-		}
+		return $this->_change ?? [];
+	}
 
-		//	...
-		return $result;
+	/** For developers
+	 *
+	 */
+	function Debug()
+	{
+		$info['database']= $this->_database;
+		$info['table']	 = $this->_table;
+		$info['record']	 = $this->_record;
+		$info['column']	 = $this->_column;
+		$info['change']	 = $this->_change;
+		$info['found']	 = $this->isFound();
+		$info['valid']	 = $this->isValid();
+		D($info);
 	}
 }
