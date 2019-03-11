@@ -15,7 +15,7 @@
  */
 namespace OP\UNIT\ORM;
 
-/** ORM
+/** Record
  *
  * @created   2018-02-01
  * @version   1.0
@@ -124,8 +124,8 @@ class Record
 
 	/** Set record value.
 	 *
-	 * @param string $name
-	 * @param mixed  $value
+	 * @param	 string			 $name
+	 * @param	 string|array	 $value
 	 */
 	function __set($name, $value)
 	{
@@ -141,7 +141,11 @@ class Record
 
 		//	Empty array is convert to null.
 		if( is_array($value) ){
-			if( strlen(trim(join(',',$value), ',')) === 0 ){
+			//	['','a','b'] --> ,a,b --> a,b
+			$array = trim(join(',',$value), ',');
+
+			//	If empty string to null.
+			if(!$array ){
 				$value = null;
 			}
 		}
@@ -155,7 +159,7 @@ class Record
 		}
 
 		//	$this->_record is origin.
-		if(($this->_record[$name] ?? null) === $value ){
+		if(($this->_record[$name] ?? null) === ($array ?? $value) ){
 
 			//	Recovered to original value.
 			unset($this->_change[$name]);
@@ -180,7 +184,7 @@ class Record
 		$this->_change[$name] = $value;
 
 		//	Change of instanciated Form input value.
-		$this->Form()->Set($name, $value);
+		$this->Form()->SetValue($name, $value);
 	}
 
 	/** Is ready.
@@ -273,8 +277,7 @@ class Record
 
 	/** Generate Form object.
 	 *
-	 * @param unknown $record
-	 * @return \OP\UNIT\Form
+	 * @return	 \IF_FORM
 	 */
 	function &Form()
 	{
@@ -376,6 +379,7 @@ class Record
 	 */
 	function Debug()
 	{
+		$info = [];
 		$info['database']= $this->_database;
 		$info['table']	 = $this->_table;
 		$info['record']	 = $this->_record;
