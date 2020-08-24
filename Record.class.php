@@ -1,25 +1,31 @@
 <?php
-/**
- * unit-orm:/Record.class.php
+/** op-unit-orm:/Record.class.php
  *
  * @created   2018-02-01
  * @version   1.0
- * @package   unit-orm
+ * @package   op-unit-orm
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
 
 /** namespace
  *
- * @created   2018-02-01
  */
 namespace OP\UNIT\ORM;
+
+/** use
+ *
+ */
+use OP\OP_CORE;
+use OP\IF_FORM;
+use OP\Unit;
+use OP\Notice;
 
 /** Record
  *
  * @created   2018-02-01
  * @version   1.0
- * @package   unit-orm
+ * @package   op-unit-orm
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
@@ -28,7 +34,7 @@ class Record
 	/** trait
 	 *
 	 */
-	use \OP_CORE;
+	use OP_CORE;
 
 	/** IF_FORM
 	 *
@@ -114,7 +120,7 @@ class Record
 			//	Call from ORM->Save(), Nessarry pkey value.
 			if( $name !== $this->Pkey() ){
 				//	This field name has not been exists.
-				\Notice::Set("This field name has not been exists. ($name)");
+				Notice::Set("This field name has not been exists. ($name)");
 			}
 		}
 
@@ -277,13 +283,13 @@ class Record
 
 	/** Generate Form object.
 	 *
-	 * @return	 \IF_FORM
+	 * @return	 IF_FORM
 	 */
 	function &Form()
 	{
 		//	...
 		if(!$this->_form ){
-			$this->_form = \Unit::Instance('Form');
+			$this->_form = Unit::Instance('Form');
 
 			//	...
 			$config = Config::Form(
