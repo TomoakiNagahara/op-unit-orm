@@ -1,25 +1,30 @@
 <?php
-/**
- * unit-orm:/Selftest.class.php
+/** op-unit-orm:/Selftest.class.php
  *
  * @created   2018-06-21
  * @version   1.0
- * @package   unit-orm
+ * @package   op-unit-orm
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
 
 /** namespace
  *
- * @created   2018-06-21
  */
 namespace OP\UNIT\ORM;
+
+/** use
+ *
+ */
+use OP\OP_CORE;
+use OP\Unit;
+use OP\Notice;
 
 /** Selftest
  *
  * @created   2018-06-21
  * @version   1.0
- * @package   unit-orm
+ * @package   op-unit-orm
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
@@ -28,7 +33,7 @@ class Selftest
 	/** trait
 	 *
 	 */
-	use \OP_CORE;
+	use OP_CORE;
 
 	/** Config
 	 *
@@ -136,7 +141,7 @@ class Selftest
 	static function Auto($file)
 	{
 		//	...
-		if(!\Unit::Load('selftest') ){
+		if(!Unit::Load('selftest') ){
 			return;
 		}
 
@@ -155,7 +160,7 @@ class Selftest
 		\OP\UNIT\SELFTEST\Inspector::Result();
 
 		// ...
-		if( ($_GET['debug'] ?? false) or \Notice::Has() ){
+		if( ($_GET['debug'] ?? false) or Notice::Has() ){
 			\OP\UNIT\SELFTEST\Inspector::Debug();
 		}
 	}

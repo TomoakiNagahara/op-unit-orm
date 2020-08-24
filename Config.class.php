@@ -1,25 +1,28 @@
 <?php
-/**
- * unit-orm:/Config.class.php
+/** op-unit-orm:/Config.class.php
  *
  * @created   2018-02-03
  * @version   1.0
- * @package   unit-orm
+ * @package   op-unit-orm
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
 
 /** namespace
  *
- * @created   2018-02-03
  */
 namespace OP\UNIT\ORM;
+
+/** use
+ *
+ */
+use OP\OP_CORE;
 
 /** ORM
  *
  * @created   2018-02-03
  * @version   1.0
- * @package   unit-orm
+ * @package   op-unit-orm
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
@@ -28,7 +31,7 @@ class Config
 	/** trait
 	 *
 	 */
-	use \OP_CORE;
+	use OP_CORE;
 
 	/** Calc input type from database record's type.
 	 *

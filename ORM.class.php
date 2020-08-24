@@ -1,10 +1,9 @@
 <?php
-/**
- * unit-orm:/ORM.class.php
+/** op-unit-orm:/ORM.class.php
  *
- * @creation  2017-03-16
+ * @created   2017-03-16
  * @version   1.0
- * @package   unit-orm
+ * @package   op-unit-orm
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
@@ -15,11 +14,17 @@
  */
 namespace OP\UNIT;
 
+/** use
+ *
+ */
+use OP\OP_CORE;
+use OP\Unit;
+
 /** ORM
  *
- * @creation  2017-03-16
+ * @created   2017-03-16
  * @version   1.0
- * @package   unit-orm
+ * @package   op-unit-orm
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
@@ -28,7 +33,7 @@ class ORM
 	/** trait
 	 *
 	 */
-	use \OP_CORE;
+	use OP_CORE;
 
 	/** DSN
 	 *
@@ -56,7 +61,7 @@ class ORM
 	private function _Insert($config)
 	{
 		//	...
-		$query = \OP\UNIT\SQL\Insert::Get($config, $this->DB());
+		$query = \OP\UNIT\SQL\DML\Insert::Get($config, $this->DB());
 
 		//	...
 		return $this->DB()->Query($query, 'insert');
@@ -70,7 +75,7 @@ class ORM
 	private function _Update($config)
 	{
 		//	...
-		$query = \OP\UNIT\SQL\Update::Get($config, $this->DB());
+		$query = \OP\UNIT\SQL\DML\Update::Get($config, $this->DB());
 
 		//	...
 		return $this->DB()->Query($query, 'update');
@@ -109,7 +114,7 @@ class ORM
 		$database = $select['database'] ?? $this->DB()->Config()['database'];
 		$table    = $select['table'];
 		$table    = trim($table, '`');
-		$query    = \OP\UNIT\SQL\Show::Column($this->DB(), $database, $table);
+		$query    = \OP\UNIT\SQL\DDL\Show::Column($this->DB(), $database, $table);
 		$struct   = $this->DB()->Query( $query );
 
 		//	Create or Fetch.
@@ -152,7 +157,7 @@ class ORM
 	{
 		//	...
 		if( $this->_DB ){
-			\Notice::Set('Already connected. (Instance had database object)');
+			Notice::Set('Already connected. (Instance had database object)');
 			return;
 		}
 
@@ -209,7 +214,7 @@ class ORM
 			$this->_DB = $DB;
 		}else
 			if(!$this->_DB ){
-				$this->_DB = \Unit::Instance('Database');
+				$this->_DB = Unit::Instance('Database');
 		}
 
 		return $this->_DB;
