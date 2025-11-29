@@ -1,32 +1,31 @@
 <?php
-/** op-unit-orm:/ORM.class.php
+/**	op-unit-orm:/ORM.class.php
  *
  * @created   2017-03-16
  * @version   1.0
  * @package   op-unit-orm
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
+ * @copyright 2017 Tomoaki Nagahara All Rights Reserved.
  */
 
-/** namespace
+/**	Declare strict type
  *
- * @created   2018-02-01
+ */
+declare(strict_types=1);
+
+/**	Namespace
+ *
  */
 namespace OP\UNIT;
 
-/** use
+/**	Use
  *
  */
 use OP\OP_CORE;
 use OP\Unit;
 
-/** ORM
+/**	ORM
  *
  * @created   2017-03-16
- * @version   1.0
- * @package   op-unit-orm
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
  */
 class ORM
 {

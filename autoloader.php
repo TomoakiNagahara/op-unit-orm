@@ -1,11 +1,9 @@
 <?php
-/** op-unit-orm:/autoloader.php
+/**	op-unit-orm:/autoloader.php
  *
  * @created   2018-02-01
- * @version   1.0
  * @package   op-unit-orm
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
+ * @copyright 2018 Tomoaki Nagahara All Rights Reserved.
  */
 //	...
 spl_autoload_register( function($name){

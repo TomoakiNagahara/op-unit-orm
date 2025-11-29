@@ -1,14 +1,17 @@
 <?php
-/** op-unit-orm:/index.php
+/**	op-unit-orm:/index.php
  *
  * @created   2017-03-16
- * @version   1.0
  * @package   op-unit-orm
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
+ * @copyright 2017 Tomoaki Nagahara All Rights Reserved.
  */
 
-/** use
+/**	Declare strict type
+ *
+ */
+declare(strict_types=1);
+
+/**	Use
  *
  */
 use OP\Unit;

@@ -1,30 +1,29 @@
 <?php
-/** op-unit-orm:/Config.class.php
+/**	op-unit-orm:/Config.class.php
  *
  * @created   2018-02-03
- * @version   1.0
  * @package   op-unit-orm
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
+ * @copyright 2018 Tomoaki Nagahara All Rights Reserved.
  */
 
-/** namespace
+/**	Declare strict type
+ *
+ */
+declare(strict_types=1);
+
+/**	Namespace
  *
  */
 namespace OP\UNIT\ORM;
 
-/** use
+/**	Use
  *
  */
 use OP\OP_CORE;
 
-/** ORM
+/**	Config
  *
  * @created   2018-02-03
- * @version   1.0
- * @package   op-unit-orm
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
  */
 class Config
 {
