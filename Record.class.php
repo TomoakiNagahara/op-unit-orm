@@ -23,13 +23,14 @@ use OP\OP_CORE;
 use OP\OP_CI;
 use OP\IF_FORM;
 use OP\Unit;
+use OP\IF_ORM_RECORD;
 use OP\Notice;
 
 /**	Record
  *
  * @created   2018-02-01
  */
-class Record
+class Record implements IF_ORM_RECORD
 {
 	/** trait
 	 *
