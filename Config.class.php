@@ -262,6 +262,6 @@ class Config
 	 */
 	static private function GetFormName( string $database, string $table, string $pval )
 	{
-		return Hasha1($database.' '.$table.' '.$pval);
+		return md5($database.' '.$table.' '.$pval);
 	}
 }
