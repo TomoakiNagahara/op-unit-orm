@@ -47,7 +47,7 @@ class Config
 		*/
 
 		//	...
-		switch( $type = $column['type'] ){
+		switch( $type = $column['type'] ?? null ){
 			case 'enum':
 				$type = $column['null'] ? 'select':'radio';
 				break;
