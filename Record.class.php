@@ -20,6 +20,7 @@ namespace OP\UNIT\ORM;
  *
  */
 use OP\OP_CORE;
+use OP\OP_CI;
 use OP\IF_FORM;
 use OP\Unit;
 use OP\Notice;
@@ -34,6 +35,7 @@ class Record
 	 *
 	 */
 	use OP_CORE;
+	use OP_CI;
 
 	/** IF_FORM
 	 *
