@@ -90,7 +90,7 @@ class Record implements IF_ORM_RECORD
 	 * @param string $struct
 	 * @param string $record
 	 */
-	function __construct($database, $table, $struct, $record=[], $config)
+	function __construct($database, $table, $struct, $record, $config)
 	{
 		//	...
 		$this->_database = $database;
