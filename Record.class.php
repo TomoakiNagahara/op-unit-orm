@@ -22,7 +22,6 @@ namespace OP\UNIT\ORM;
 use OP\OP_CORE;
 use OP\OP_CI;
 use OP\IF_FORM;
-use OP\Unit;
 use OP\IF_ORM_RECORD;
 use OP\Notice;
 
@@ -291,7 +290,7 @@ class Record implements IF_ORM_RECORD
 	{
 		//	...
 		if(!$this->_form ){
-			$this->_form = Unit::Instance('Form');
+			$this->_form = OP()->Unit()->Form();
 
 			//	...
 			$config = Config::Form(
