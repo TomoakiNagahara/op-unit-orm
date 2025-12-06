@@ -1,3 +1,6 @@
 [submodule "testcases"]
 	path = testcases
 	url = https://github.com/onepiece-framework/op-unit-orm-testcase.git
+[submodule "ci"]
+	path = ci
+	url = https://github.com/onepiece-framework/op-unit-orm-ci.git
