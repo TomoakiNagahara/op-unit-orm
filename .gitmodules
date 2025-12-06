@@ -4,3 +4,6 @@
 [submodule "ci"]
 	path = ci
 	url = https://github.com/onepiece-framework/op-unit-orm-ci.git
+[submodule "tutorial"]
+	path = tutorial
+	url = https://github.com/onepiece-framework/op-unit-orm-tutorial.git
