@@ -16,8 +16,9 @@ namespace OP\UNIT\ORM;
  *
  */
 use OP\OP_CORE;
-use OP\Unit;
-use OP\Notice;
+use OP\IF_SELFTEST_CONFIG;
+use OP\IF_SELFTEST_INSPECTOR;
+use OP\OP_CI;
 
 /**	Selftest
  *
@@ -25,18 +26,24 @@ use OP\Notice;
  */
 class Selftest
 {
-	/** trait
+	/**	trait
 	 *
 	 */
 	use OP_CORE;
+	use OP_CI;
 
-	/** Config
+	/**	Config
 	 *
 	 * @param	 string	 $file
 	 * @return	 array	 $config
 	 */
-	static private function _Config($file)
+	static private function _Config( string $file )
 	{
+		//	...
+		if( empty($file) ){
+			return;
+		}
+
 		//	...
 		$config = include($file);
 
@@ -49,18 +56,18 @@ class Selftest
 			$dsn = array_merge($dsn, $temp);
 
 			//	...
-			\OP\UNIT\SELFTEST\Configer::DSN( $dsn['host'], $dsn['scheme'], $dsn['port']);
-			\OP\UNIT\SELFTEST\Configer::User(['name'=>$dsn['user'],'password'=>$dsn['pass'],'charset'=>$dsn['charset'] ?? 'utf8']);
+			IF_SELFTEST_CONFIG::DSN( $dsn['host'], $dsn['scheme'], $dsn['port']);
+			IF_SELFTEST_CONFIG::User(['name'=>$dsn['user'],'password'=>$dsn['pass'],'charset'=>$dsn['charset'] ?? 'utf8']);
 
 			//	...
 			foreach( $databases as $database => $tables ){
 				//	...
-				\OP\UNIT\SELFTEST\Configer::Database(['name'=>$database]);
+				IF_SELFTEST_CONFIG::Database(['name'=>$database]);
 
 				//	...
 				foreach( $tables as $table => $columns ){
 					//	...
-					\OP\UNIT\SELFTEST\Configer::Table($table);
+					IF_SELFTEST_CONFIG::Table($table);
 
 					//	...
 					foreach( $columns as $field => $column ){
@@ -76,12 +83,11 @@ class Selftest
 						self::_length($column);
 
 						//	...
-						\OP\UNIT\SELFTEST\Configer::Set('column', $column);
-					//	\OP\UNIT\SELFTEST\Configer::Column($field, $type, $length, $null, $default, $comment, $column);
+						IF_SELFTEST_CONFIG::Set('column', $column);
 
 						//	...
 						if( ($column['ai'] ?? false) ){
-							\OP\UNIT\SELFTEST\Configer::Index($field, $field, $field, 'auto incrment');
+							IF_SELFTEST_CONFIG::Index($field, $field, $field, 'auto incrment');
 						}
 					}
 				}
@@ -89,7 +95,7 @@ class Selftest
 		}
 
 		//	...
-		return \OP\UNIT\SELFTEST\Configer::Get();
+		return IF_SELFTEST_CONFIG::Get();
 	}
 
 	/** Length
@@ -136,7 +142,7 @@ class Selftest
 	static function Auto($file)
 	{
 		//	...
-		if(!Unit::Load('selftest') ){
+		if(!OP()->Unit()->Load('selftest') ){
 			return;
 		}
 
@@ -144,19 +150,19 @@ class Selftest
 		$config = self::_Config($file);
 
 		//	Set configuration.
-		\OP\UNIT\SELFTEST\Inspector::Auto($config, null);
+		IF_SELFTEST_INSPECTOR::Auto($config, null);
 
 		//	...
-		while( $message = \OP\UNIT\SELFTEST\Inspector::Error() ){
+		while( $message = IF_SELFTEST_INSPECTOR::Error() ){
 			printf('<p class="testcase selftest bold error">%s</p>', $message);
 		}
 
 		//	...
-		\OP\UNIT\SELFTEST\Inspector::Result();
+		IF_SELFTEST_INSPECTOR::Result();
 
 		// ...
-		if( ($_GET['debug'] ?? false) or Notice::Has() ){
-			\OP\UNIT\SELFTEST\Inspector::Debug();
+		if( OP()->Request('debug') or OP()->Unit()->Notice()->Has() ){
+			IF_SELFTEST_INSPECTOR::Debug();
 		}
 	}
 }
