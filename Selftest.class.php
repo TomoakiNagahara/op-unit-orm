@@ -1,32 +1,27 @@
 <?php
-/** op-unit-orm:/Selftest.class.php
+/**	op-unit-orm:/Selftest.class.php
  *
  * @created   2018-06-21
- * @version   1.0
+ * @license   Apache-2.0
  * @package   op-unit-orm
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
+ * @copyright (C) 2018 Tomoaki Nagahara
  */
 
-/** namespace
+/**	Namespace
  *
  */
 namespace OP\UNIT\ORM;
 
-/** use
+/**	Use
  *
  */
 use OP\OP_CORE;
 use OP\Unit;
 use OP\Notice;
 
-/** Selftest
+/**	Selftest
  *
  * @created   2018-06-21
- * @version   1.0
- * @package   op-unit-orm
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
  */
 class Selftest
 {

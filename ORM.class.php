@@ -2,9 +2,9 @@
 /**	op-unit-orm:/ORM.class.php
  *
  * @created   2017-03-16
- * @version   1.0
+ * @license   Apache-2.0
  * @package   op-unit-orm
- * @copyright 2017 Tomoaki Nagahara All Rights Reserved.
+ * @copyright (C) 2017 Tomoaki Nagahara
  */
 
 /**	Declare strict type

@@ -2,8 +2,9 @@
 /**	op-unit-orm:/autoloader.php
  *
  * @created   2018-02-01
+ * @license   Apache-2.0
  * @package   op-unit-orm
- * @copyright 2018 Tomoaki Nagahara All Rights Reserved.
+ * @copyright (C) 2018 Tomoaki Nagahara
  */
 //	...
 spl_autoload_register( function($name){

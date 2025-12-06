@@ -2,8 +2,9 @@
 /**	op-unit-orm:/Records.class.php
  *
  * @created   2018-10-06
+ * @license   Apache-2.0
  * @package   op-unit-orm
- * @copyright 2018 Tomoaki Nagahara All Rights Reserved.
+ * @copyright (C) 2018 Tomoaki Nagahara
  */
 
 /**	Declare strict type
