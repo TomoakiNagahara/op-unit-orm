@@ -21,6 +21,7 @@ namespace OP\UNIT\ORM;
  *
  */
 use OP\OP_CORE;
+use OP\OP_CI;
 
 /**	Records
  *
@@ -32,4 +33,5 @@ class Records
 	 *
 	 */
 	use OP_CORE;
+	use OP_CI;
 }
