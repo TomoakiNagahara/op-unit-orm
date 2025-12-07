@@ -91,7 +91,7 @@ class Record implements IF_ORM_RECORD
 	 * @param string $struct
 	 * @param string $record
 	 */
-	function __construct($database, $table, $struct, $record, $config)
+	function __construct( string $database='', string $table='', array $struct=[], array $record=[], array $config=[] )
 	{
 		//	...
 		$this->_database = $database;
@@ -106,7 +106,7 @@ class Record implements IF_ORM_RECORD
 	 * @param  string $name
 	 * @return mixed  $value
 	 */
-	function __get($name)
+	function __get( string $name )
 	{
 		//	Search for Change values.
 		if( isset($this->_change[$name]) ){
@@ -135,8 +135,14 @@ class Record implements IF_ORM_RECORD
 	 * @param	 string			 $name
 	 * @param	 string|array	 $value
 	 */
-	function __set($name, $value)
+	function __set( string $name, $value )
 	{
+		//	...
+		if(!isset($this->_column[$name]) ){
+			OP()->Error("This field name has not been set: {$name}");
+			return;
+		}
+
 		//	Does not update timestamp.
 		if( $this->_column[$name]['type'] === 'timestamp' ){
 			return;
@@ -359,7 +365,7 @@ class Record implements IF_ORM_RECORD
 	 *
 	 * @param array $values
 	 */
-	function Sets($values)
+	function Sets( array $values )
 	{
 		foreach( $values as $field => $value ){
 			$this->Set( $field, $value );
@@ -387,6 +393,12 @@ class Record implements IF_ORM_RECORD
 	 */
 	function Debug()
 	{
+		//	...
+		if(!OP()->Request('debug') ){
+			return;
+		}
+
+		//	...
 		$info = [];
 		$info['database']= $this->_database;
 		$info['table']	 = $this->_table;
