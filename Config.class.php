@@ -21,6 +21,7 @@ namespace OP\UNIT\ORM;
  *
  */
 use OP\OP_CORE;
+use OP\OP_CI;
 
 /**	Config
  *
@@ -32,13 +33,14 @@ class Config
 	 *
 	 */
 	use OP_CORE;
+	use OP_CI;
 
-	/** Calc input type from database record's type.
+	/**	Calc input type from database record's type.
 	 *
 	 * @param	 array	 $column
 	 * @return	 string	 $type
 	 */
-	static private function _Type($column)
+	static private function _Type( array $column ) : string
 	{
 		/*
 		//	...
@@ -65,16 +67,19 @@ class Config
 		}
 
 		//	...
-		return $type;
+		return $type ?? '';
 	}
 
-	/** Generate validation rule.
+	/**	Generate validation rule.
 	 *
 	 * @param	 array	 $column
 	 * @return	 string	 $rule
 	 */
-	static private function _Rule( array $column, $rule )
+	static private function _Rule( array $column, string $rule ) : string
 	{
+		//	...
+		$rule = [];
+
 		//	Required
 		if(!$column['null'] and $column['extra'] !== 'auto_increment' ){
 			//	...
@@ -161,7 +166,7 @@ class Config
 	 * @param  array  $config
 	 * @return array  $result
 	 */
-	static function Form($database, $table, $columns, $record, $config)
+	static function Form( string $database, string $table, array $columns, array $record, array $config ) : array
 	{
 		//	...
 		$result = [];
@@ -258,7 +263,7 @@ class Config
 	 *
 	 * @param  string $database
 	 * @param  string $table
-	 * @param  string $pval
+	 * @param  string $pval is primary key's value
 	 * @return string $hash
 	 */
 	static private function GetFormName( string $database, string $table, string $pval )
