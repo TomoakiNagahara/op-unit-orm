@@ -75,11 +75,8 @@ class Config
 	 * @param	 array	 $column
 	 * @return	 string	 $rule
 	 */
-	static private function _Rule( array $column, string $rule ) : string
+	static private function _Rule( array $column, array $rule ) : string
 	{
-		//	...
-		$rule = [];
-
 		//	Required
 		if(!$column['null'] and $column['extra'] !== 'auto_increment' ){
 			//	...
