@@ -314,6 +314,7 @@ class ORM implements IF_ORM
 		if( $form = $record->Form() ){
 			//	...
 			if(!$form->Token() ){
+				$record->Error("Session error: token");
 				return;
 			}
 
