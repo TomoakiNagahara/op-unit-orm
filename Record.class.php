@@ -409,4 +409,23 @@ class Record implements IF_ORM_RECORD
 		$info['valid']	 = $this->isValid();
 		D($info);
 	}
+
+	/**	Set / Get error message.
+	 *
+	 * @created    2025-12-09
+	 * @param      string     $message
+	 * @return     string|null
+	 */
+	function Error( string $message='' )
+	{
+		//	...
+		static $_error = [];
+
+		//	...
+		if( $message ){
+			$_error[] = $message;
+		}else{
+			return array_shift($_error);
+		}
+	}
 }
