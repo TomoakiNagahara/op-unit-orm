@@ -123,7 +123,7 @@ class ORM implements IF_ORM
 		}
 
 		//	Fetch table structure.
-		$database = $parsed['database'] ?? $config['database'];
+		$database = $parsed['database'] ?? $config['database'] ?? '';
 		$table    = $parsed['table'];
 		$table    = trim($table, '`');
 		$query    = OP()->Unit()->SQL()->DDL()->Show()->Column( $table, $database, $label );
