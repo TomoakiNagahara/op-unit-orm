@@ -214,7 +214,7 @@ class ORM implements IF_ORM
 	 * @param      string     $label
 	 * @return     string     $label
 	 */
-	static function Label( string $label='default' ) : string
+	static function Label( string $label='' ) : string
 	{
 		//	...
 		static $_label = null;
